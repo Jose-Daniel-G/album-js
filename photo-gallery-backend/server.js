@@ -93,7 +93,27 @@ app.get('/images/:folder', (req, res) => {
 
   res.json(images);
 });
+// delete pictures
+app.delete('/delete/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', filename);
 
+  console.log('Intentando borrar:', filePath);
+  console.log('¿Existe el archivo?', fs.existsSync(filePath));
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        // El archivo no existe
+        console.warn('Archivo no encontrado para borrar:', filename);
+        return res.status(404).json({ message: 'Archivo no encontrado' });
+      }
+      console.error('Error al borrar archivo:', err);
+      return res.status(500).json({ message: 'Error al borrar archivo' });
+    }
+
+    res.json({ message: 'Archivo eliminado correctamente' });
+  });
+});
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);

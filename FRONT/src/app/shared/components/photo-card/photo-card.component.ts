@@ -16,8 +16,7 @@ export class PhotoCardComponent {
     this.photoSelected.emit(this.img);
   }
   
-  onDeleteClick(event: Event) {
-    event.stopPropagation(); // Para que no abra el modal
-    this.deletePhoto.emit(this.img);
+  onDeleteClick() {
+    this.deletePhoto.emit(this.img); // ⬅️ emite la imagen a borrar
   }
 }
