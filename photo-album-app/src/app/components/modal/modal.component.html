@@ -1,9 +1,0 @@
-<div class="modal-overlay" (click)="onClose()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <img [src]="img.url" [alt]="img.description" class="modal-image" />
-    <div class="modal-info">
-      <p>{{ img.description }}</p>
-    </div>
-    <button class="close-button" (click)="onClose()">X</button>
-  </div>
-</div>

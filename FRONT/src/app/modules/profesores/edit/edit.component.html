@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h5>Editar Profesor</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="guardarCambios()">
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" id="nombre" name="nombre" class="form-control" [(ngModel)]="profesor.nombre" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="apellido" class="form-label">Apellido</label>
+          <input type="text" id="apellido" name="apellido" class="form-control" [(ngModel)]="profesor.apellido" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+          <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="form-control" [(ngModel)]="profesor.fecha_nacimiento" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input type="email" id="email" name="email" class="form-control" [(ngModel)]="profesor.email" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="telefono" class="form-label">Teléfono</label>
+          <input type="text" id="telefono" name="telefono" class="form-control" [(ngModel)]="profesor.telefono" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="especialidad" class="form-label">Especialidad</label>
+          <input type="text" id="especialidad" name="especialidad" class="form-control" [(ngModel)]="profesor.especialidad" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="fecha_contratacion" class="form-label">Fecha de Contratación</label>
+          <input type="date" id="fecha_contratacion" name="fecha_contratacion" class="form-control" [(ngModel)]="profesor.fecha_contratacion" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <a class="btn btn-secondary ms-2" [routerLink]="['/profesores']">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</div>

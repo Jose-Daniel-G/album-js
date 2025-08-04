@@ -1,0 +1,15 @@
+<div class="container-fluid">
+  <!-- gallery.component.html -->
+  <div class="folders-container">
+    <div class="folder-card" *ngFor="let folder of folders" (click)="onFolderClick(folder)">
+      <div class="folder-icon">📁</div>
+      <div class="folder-name">{{ folder }}</div>
+    </div>
+  </div>
+
+  <div class="gallery-container">
+    <app-photo-card *ngFor="let img of images" [img]="img" (photoSelected)="openModal($event)"
+      (deletePhoto)="deletePhoto(img)"></app-photo-card>
+  </div>
+  <app-modal *ngIf="showModal" [img]="selectedPhoto" (closeModal)="closeModal()"></app-modal> 
+</div>

@@ -1,0 +1,80 @@
+
+
+services:
+  # postgres:
+  #   image: postgres:13
+  #   container_name: pet_markt_postgres #this is to put en instead o the ip
+  #   environment:
+  #     - POSTGRES_DB=pet_markt
+  #     - POSTGRES_USER=juan
+  #     - POSTGRES_PASSWORD=admin123
+  #   ports:
+  #     - '5432:5432'
+  #   volumes:
+  #     - /postgres_data:/var/lib/postgresql/data
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@mail.com
+  #     - PGADMIN_DEFAULT_PASSWORD=root
+  #   ports:
+  #     - 5050:80
+  #   depends_on:
+  #     - postgres
+
+  # Servicio de base de datos MySQL
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_album
+    environment:
+      MYSQL_DATABASE: multimedia_album
+      MYSQL_ROOT_PASSWORD: admin123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - album_net
+
+  # Servicio phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin_album
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - album_net
+
+  # Servicio Laravel Backend
+  backend:
+    build:
+      context: ./BACKEND         # Ruta donde está tu Laravel
+      dockerfile: Dockerfile     # Dockerfile que crearás
+    container_name: laravel_backend
+    ports:
+      - "8000:8001"             # Laravel servirá en este puerto
+    volumes:
+      - ./BACKEND:/var/www       # Código fuente dentro del contenedor
+    depends_on:
+      - mysql
+    networks:
+      - album_net
+    working_dir: /var/www
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+# Volúmenes persistentes
+volumes:
+  mysql_data:
+
+# Red compartida entre servicios
+networks:
+  album_net:
+    driver: bridge
