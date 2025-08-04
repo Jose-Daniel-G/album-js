@@ -1,4 +1,6 @@
 <div class="container-fluid">
+
+
   <!-- gallery.component.html -->
   <div class="folders-container">
     <div class="folder-card" *ngFor="let folder of folders" (click)="onFolderClick(folder)">
@@ -6,10 +8,21 @@
       <div class="folder-name">{{ folder }}</div>
     </div>
   </div>
-
+  <!-- Contenedor para subir imagen -->
+  <div class="row">
+    <div class="col-2">
+      <label
+        class="btn btn-light d-flex align-items-center gap-2 rounded-pill shadow-sm px-3 py-2 position-relative overflow-hidden">
+        <span class="fs-5">+</span>
+        <span class="fw-medium">Nuevo</span>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)"
+          class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" />
+      </label>
+    </div>
+  </div>
   <div class="gallery-container">
     <app-photo-card *ngFor="let img of images" [img]="img" (photoSelected)="openModal($event)"
       (deletePhoto)="deletePhoto(img)"></app-photo-card>
   </div>
-  <app-modal *ngIf="showModal" [img]="selectedPhoto" (closeModal)="closeModal()"></app-modal> 
+  <app-modal *ngIf="showModal" [img]="selectedPhoto" (closeModal)="closeModal()"></app-modal>
 </div>
