@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { GalleryComponent } from './components/gallery/gallery.component';
 import { PhotoCardComponent } from './components/photo-card/photo-card.component';
 import { ModalComponent } from './components/modal/modal.component';
+import { CommonModule, NgFor } from '@angular/common';
 
 @Component({
   selector: 'app-root',

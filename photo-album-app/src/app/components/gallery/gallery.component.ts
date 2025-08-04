@@ -1,75 +1,80 @@
+// src/app/components/gallery/gallery.component.ts
 import { Component, OnInit } from '@angular/core';
-import { PhotoService } from '../../services/photo.service';
-import { PhotoCardComponent } from '../photo-card/photo-card.component'; // ¡Importación corregida!
-import { ModalComponent } from '../modal/modal.component'; // ¡Importación corregida!
-import { CommonModule } from '@angular/common'; // Necesario para la directiva *ngFor
-import { UploadService } from '../../services/upload.service';
+import { GalleryService } from '../../services/gallery.service';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // 👈 IMPORTANTE
 
 @Component({
   selector: 'app-gallery',
-  standalone: true, // Asumimos que estás usando un componente standalone
-  imports: [CommonModule, PhotoCardComponent, ModalComponent], // Importa los componentes que usas en su HTML
+  imports: [CommonModule, FormsModule, NgFor, NgIf],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.css'],
 })
 export class GalleryComponent implements OnInit {
-  photos: any[] = [];
-  selectedPhoto: any | null = null;
-  showModal = false;
+  folders: string[] = ['default']; // inicial
+  currentFolder: string = 'default';
+  images: any[] = [];
 
-  constructor(private photoService: PhotoService, private uploadService: UploadService) {}
+  constructor(private galleryService: GalleryService) {}
 
   ngOnInit(): void {
-  this.photoService.getPhotos().subscribe(data => {
-    const uploadedPhotos = JSON.parse(localStorage.getItem('uploadedPhotos') || '[]');
-    this.photos = [...uploadedPhotos, ...data];
+    this.galleryService.getFolders().subscribe((folders) => {
+      this.folders = folders;
+      // Selecciona la primera carpeta disponible o un valor vacío
+      this.currentFolder = folders.length > 0 ? folders[0] : '';
+      if (this.currentFolder) {
+        this.loadImages();
+      }
+    });
+  }
+
+loadImages(): void {
+  console.log('Cargando imágenes de:', this.currentFolder);
+  this.galleryService.getImages(this.currentFolder).subscribe(images => {
+    this.images = images;
+    console.log('Imágenes cargadas:', images);
+  }, error => {
+    console.error('Error al cargar imágenes:', error);
   });
+}
+
+  onFolderChange(folder: string): void {
+    this.currentFolder = folder;
+    this.loadImages();
   }
 
-
-  openModal(photo: any) {
-    this.selectedPhoto = photo;
-    this.showModal = true;
+  createFolder(): void {
+    const folder = prompt('Nombre de la nueva carpeta:');
+    if (folder) {
+      this.galleryService.createFolder(folder).subscribe(() => {
+        if (!this.folders.includes(folder)) {
+          this.folders.push(folder);
+        }
+        this.currentFolder = folder;
+        this.loadImages();
+      });
+    }
   }
 
-  closeModal() {
-    this.showModal = false;
-    this.selectedPhoto = null;
+  onFolderClick(folder: string): void {
+    console.log('Carpeta seleccionada:', folder);
+    this.currentFolder = folder;
+    this.loadImages();
   }
+
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (!file) return;
 
-    this.uploadService.uploadImage(file).subscribe(response => {
-      console.log('Respuesta del servidor al subir imagen:', response);  // ← Agrega esto
-      const newPhoto = {
-        id: Date.now(),
-        url: response.url,
-        description: 'Imagen cargada por el usuario'
-      };
-
-      this.photos.unshift(newPhoto);
-
-      // Guardar en localStorage como copia persistente (opcional)
-      const savedPhotos = JSON.parse(localStorage.getItem('uploadedPhotos') || '[]');
-      savedPhotos.unshift(newPhoto);
-      localStorage.setItem('uploadedPhotos', JSON.stringify(savedPhotos));
-    });
-  }
-  deletePhoto(photo: any): void {
-    const filename = photo.url.split('/').pop(); // Extrae nombre del archivo
-    console.log('Deleting filename:', filename); // <-- AÑADE ESTO
-    this.uploadService.deleteImage(filename).subscribe(() => {
-      // Elimina del arreglo
-      this.photos = this.photos.filter((p) => p !== photo); // Elimina de localStorage
-
-      const uploadedPhotos = JSON.parse(
-        localStorage.getItem('uploadedPhotos') || '[]'
-      );
-      const updatedPhotos = uploadedPhotos.filter(
-        (p: any) => p.url !== photo.url
-      );
-      localStorage.setItem('uploadedPhotos', JSON.stringify(updatedPhotos));
-    });
+    this.galleryService
+      .uploadImage(this.currentFolder, file)
+      .subscribe((response) => {
+        const newImage = {
+          url: response.url,
+          filename: response.filename,
+        };
+        this.images.unshift(newImage);
+        event.target.value = ''; // para permitir reusar el mismo archivo
+      });
   }
 }
