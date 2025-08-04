@@ -1,4 +1,12 @@
-<div class="photo-card" (click)="openModal()">
+
+<div class="card" style="width: 18rem;" (click)="openModal()">
   <img [src]="img.url" [alt]="img.description" class="photo-card-image" />
-  <button class="delete-btn" (click)="onDeleteClick($event)">🗑️</button>
+
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.
+    </p>
+    <button class="btn btn-danger" (click)="onDeleteClick($event)">🗑️</button>
+
+  </div>
 </div>

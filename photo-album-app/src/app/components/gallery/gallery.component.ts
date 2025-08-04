@@ -2,12 +2,13 @@
 import { Component, OnInit } from '@angular/core';
 import { GalleryService } from '../../services/gallery.service';
 import { PhotoCardComponent } from '../photo-card/photo-card.component'; // ¡Importación corregida!
-import { CommonModule, NgFor } from '@angular/common';
+import { ModalComponent } from '../modal/modal.component'; // ¡Importación corregida!
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // 👈 IMPORTANTE
 
 @Component({
   selector: 'app-gallery',
-  imports: [CommonModule,PhotoCardComponent, FormsModule, NgFor],
+  imports: [CommonModule,PhotoCardComponent, FormsModule, ModalComponent],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.css'],
 })
