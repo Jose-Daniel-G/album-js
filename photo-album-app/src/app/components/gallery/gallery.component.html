@@ -4,19 +4,15 @@
     <div class="folder-icon">📁</div>
     <div class="folder-name">{{ folder }}</div>
   </div>
-  </div>
+</div>
 
-  <!-- <div class="gallery-container">
+<!-- <div class="gallery-container">
     <div *ngFor="let img of images" class="photo-card">
       <img [src]="img.url" [alt]="img.filename" class="photo-card-image" />
     </div>
   </div> -->
-  <!-- Contenedor de galería de fotos -->
+<!-- Contenedor de galería de fotos -->
 <div class="gallery-container">
-  <app-photo-card
-    *ngFor="let img of images"
-    [img]="img"
-    (photoSelected)="openModal($event)"
-    (deletePhoto)="deletePhoto(img)"
-  ></app-photo-card>
+  <app-photo-card *ngFor="let img of images" [img]="img" (photoSelected)="openModal($event)"
+    (deletePhoto)="deletePhoto(img)"></app-photo-card>
 </div>
