@@ -7,16 +7,16 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./photo-card.component.css'],
 })
 export class PhotoCardComponent {
-  @Input() photo: any;
+  @Input() img: any;
   @Output() photoSelected = new EventEmitter<any>();
   @Output() deletePhoto = new EventEmitter<any>();
 
   openModal() {
-    this.photoSelected.emit(this.photo);
+    this.photoSelected.emit(this.img);
   }
   
   onDeleteClick(event: Event) {
     event.stopPropagation(); // Para que no abra el modal
-    this.deletePhoto.emit(this.photo);
+    this.deletePhoto.emit(this.img);
   }
 }

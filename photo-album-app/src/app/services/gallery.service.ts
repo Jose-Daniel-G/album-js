@@ -25,4 +25,7 @@ export class GalleryService {
   getFolders() {
     return this.http.get<string[]>(`${this.backendUrl}/folders`);
   }
+  deleteImage(filename: string) {
+    return this.http.delete(`http://localhost:3000/delete/${filename}`);
+  }
 }
