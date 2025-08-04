@@ -13,6 +13,7 @@
     *ngFor="let photo of photos"
     [photo]="photo"
     (photoSelected)="openModal($event)"
+    (deletePhoto)="deletePhoto(photo)"
   ></app-photo-card>
 </div>
 

@@ -6,7 +6,7 @@ const path = require('path');
 
 const app = express();
 const PORT = 3000;
-
+const fs = require('fs');
 // Habilitar CORS (para que Angular pueda hacer peticiones)
 app.use(cors());
 
@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
     cb(null, 'uploads');
   },
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname;
+    const uniqueName = Date.now() + '-' + file.originalname.toLowerCase();
     cb(null, uniqueName);
   }
 });
@@ -34,6 +34,27 @@ app.post('/upload', upload.single('image'), (req, res) => {
 
   const fileUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
   res.json({ url: fileUrl });
+});
+// delete pictures
+app.delete('/delete/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, 'uploads', filename);
+
+  console.log('Intentando borrar:', filePath);
+  console.log('¿Existe el archivo?', fs.existsSync(filePath));
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        // El archivo no existe
+        console.warn('Archivo no encontrado para borrar:', filename);
+        return res.status(404).json({ message: 'Archivo no encontrado' });
+      }
+      console.error('Error al borrar archivo:', err);
+      return res.status(500).json({ message: 'Error al borrar archivo' });
+    }
+
+    res.json({ message: 'Archivo eliminado correctamente' });
+  });
 });
 
 // Iniciar servidor

@@ -36,24 +36,40 @@ export class GalleryComponent implements OnInit {
     this.showModal = false;
     this.selectedPhoto = null;
   }
-onFileSelected(event: any): void {
-  const file: File = event.target.files[0];
-  if (!file) return;
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (!file) return;
 
-  this.uploadService.uploadImage(file).subscribe(response => {
-    const newPhoto = {
-      id: Date.now(),
-      url: response.url,
-      description: 'Imagen cargada por el usuario'
-    };
+    this.uploadService.uploadImage(file).subscribe(response => {
+      console.log('Respuesta del servidor al subir imagen:', response);  // ← Agrega esto
+      const newPhoto = {
+        id: Date.now(),
+        url: response.url,
+        description: 'Imagen cargada por el usuario'
+      };
 
-    this.photos.unshift(newPhoto);
+      this.photos.unshift(newPhoto);
 
-    // Guardar en localStorage como copia persistente (opcional)
-    const savedPhotos = JSON.parse(localStorage.getItem('uploadedPhotos') || '[]');
-    savedPhotos.unshift(newPhoto);
-    localStorage.setItem('uploadedPhotos', JSON.stringify(savedPhotos));
-  });
-}
+      // Guardar en localStorage como copia persistente (opcional)
+      const savedPhotos = JSON.parse(localStorage.getItem('uploadedPhotos') || '[]');
+      savedPhotos.unshift(newPhoto);
+      localStorage.setItem('uploadedPhotos', JSON.stringify(savedPhotos));
+    });
+  }
+  deletePhoto(photo: any): void {
+    const filename = photo.url.split('/').pop(); // Extrae nombre del archivo
+    console.log('Deleting filename:', filename); // <-- AÑADE ESTO
+    this.uploadService.deleteImage(filename).subscribe(() => {
+      // Elimina del arreglo
+      this.photos = this.photos.filter((p) => p !== photo); // Elimina de localStorage
 
+      const uploadedPhotos = JSON.parse(
+        localStorage.getItem('uploadedPhotos') || '[]'
+      );
+      const updatedPhotos = uploadedPhotos.filter(
+        (p: any) => p.url !== photo.url
+      );
+      localStorage.setItem('uploadedPhotos', JSON.stringify(updatedPhotos));
+    });
+  }
 }
