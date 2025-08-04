@@ -5,3 +5,7 @@
   gap: 16px;
   padding: 24px;
 }
+.upload-container input[type="file"] {
+  display: block;
+  margin: 10px 0;
+}

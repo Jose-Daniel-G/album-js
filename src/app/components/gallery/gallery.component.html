@@ -1,3 +1,9 @@
+<!-- Contenedor para subir imagen -->
+<div class="upload-container">
+  <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+</div>
+
+<!-- Contenedor de galería de fotos -->
 <div class="gallery-container">
   <app-photo-card
     *ngFor="let photo of photos"
@@ -6,4 +12,9 @@
   ></app-photo-card>
 </div>
 
-<app-modal *ngIf="showModal" [photo]="selectedPhoto" (closeModal)="closeModal()"></app-modal>
+<!-- Modal de visualización -->
+<app-modal
+  *ngIf="showModal"
+  [photo]="selectedPhoto"
+  (closeModal)="closeModal()"
+></app-modal>
