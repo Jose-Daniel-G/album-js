@@ -1,0 +1,9 @@
+<div class="gallery-container">
+  <app-photo-card
+    *ngFor="let photo of photos"
+    [photo]="photo"
+    (photoSelected)="openModal($event)"
+  ></app-photo-card>
+</div>
+
+<app-modal *ngIf="showModal" [photo]="selectedPhoto" (closeModal)="closeModal()"></app-modal>
