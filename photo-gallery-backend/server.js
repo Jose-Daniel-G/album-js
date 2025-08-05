@@ -12,6 +12,10 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Aumentar el límite de tamaño de las solicitudes
+// Esto es útil para subir imágenes grandes
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Crear carpeta
 app.post("/folders", (req, res) => {

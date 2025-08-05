@@ -85,18 +85,20 @@ export class GalleryComponent implements OnInit {
   deletePhoto(img: any): void {
     const filename = img.url.split('/').pop(); // Extrae nombre del archivo
     console.log('Deleting filename:', filename); // <-- AÑADE ESTO
-    this.galleryService.deleteImage(this.currentFolder, filename).subscribe(() => {
-      // Elimina del arreglo
-      this.images = this.images.filter((p) => p !== img); // Elimina de localStorage
+    this.galleryService
+      .deleteImage(this.currentFolder, filename)
+      .subscribe(() => {
+        // Elimina del arreglo
+        this.images = this.images.filter((p) => p !== img); // Elimina de localStorage
 
-      const uploadedPhotos = JSON.parse(
-        localStorage.getItem('uploadedPhotos') || '[]'
-      );
-      const updatedPhotos = uploadedPhotos.filter(
-        (p: any) => p.url !== img.url
-      );
-      localStorage.setItem('uploadedPhotos', JSON.stringify(updatedPhotos));
-    });
+        const uploadedPhotos = JSON.parse(
+          localStorage.getItem('uploadedPhotos') || '[]'
+        );
+        const updatedPhotos = uploadedPhotos.filter(
+          (p: any) => p.url !== img.url
+        );
+        localStorage.setItem('uploadedPhotos', JSON.stringify(updatedPhotos));
+      });
   }
   openModal(img: any) {
     this.selectedPhoto = img;
@@ -106,5 +108,9 @@ export class GalleryComponent implements OnInit {
   closeModal() {
     this.showModal = false;
     this.selectedPhoto = null;
+  }
+  onBackToFolders(): void {
+    this.currentFolder = '';
+    this.images = [];
   }
 }

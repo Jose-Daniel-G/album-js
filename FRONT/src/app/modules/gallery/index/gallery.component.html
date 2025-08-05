@@ -1,25 +1,44 @@
 <div class="container-fluid">
-  <!-- gallery.component.html -->
-  <div class="folders-container">
-    <div class="folder-card" *ngFor="let folder of folders" (click)="onFolderClick(folder)">
-      <div class="folder-icon">📁</div>
-      <div class="folder-name">{{ folder }}</div>
+
+  <!-- 🗂 Volver atrás si estás dentro de una subcarpeta -->
+  <div *ngIf="currentFolder !== ''" class="mb-3">
+    <button class="btn btn-outline-secondary" (click)="onBackToFolders()">
+      ⬅️ Volver a carpetas
+    </button>
+  </div>
+
+  <!-- 🗂 MOSTRAR SOLO SI NO SE HA SELECCIONADO UNA CARPETA -->
+  <div *ngIf="currentFolder === ''" class="d-flex flex-wrap gap-3 mb-4">
+    <div
+      class="border rounded p-3 text-center bg-light"
+      style="min-width: 120px; cursor: pointer;"
+      *ngFor="let folder of folders"
+      (click)="onFolderClick(folder)">
+      <div class="fs-1">📁</div>
+      <div class="fw-bold text-truncate" style="max-width: 100px;">{{ folder }}</div>
     </div>
   </div>
-  <!-- Contenedor para subir imagen -->
-  <div class="row">
-    <div class="col-2">
-      <label
-        class="btn btn-light d-flex align-items-center gap-2 rounded-pill shadow-sm px-3 py-2 position-relative overflow-hidden">
-        <span class="fs-5">+</span>
-        <span class="fw-medium">Nuevo</span>
-        <input type="file" accept="image/*" (change)="onFileSelected($event)"
-          class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer;" />
-      </label>
-    </div>
+
+  <!-- 📤 Subir imagen -->
+  <div *ngIf="currentFolder !== ''" class="mb-4">
+    <label
+      class="btn btn-light d-flex align-items-center gap-2 rounded-pill shadow-sm px-3 py-2 position-relative overflow-hidden">
+      <span class="fs-5">+</span>
+      <span class="fw-medium">Nuevo</span>
+      <input type="file" accept="image/*" (change)="onFileSelected($event)"
+        class="position-absolute top-0 start-0 w-100 h-100 opacity-0" />
+    </label>
   </div>
-  
-    <app-photo-card *ngFor="let img of images" [img]="img" (photoSelected)="openModal($event)"
-      (deletePhoto)="deletePhoto(img)"></app-photo-card>
+
+  <!-- 🖼️ Imágenes -->
+  <div class="gallery-container">
+    <app-photo-card
+      *ngFor="let img of images"
+      [img]="img"
+      (photoSelected)="openModal($event)"
+      (deletePhoto)="deletePhoto(img)">
+    </app-photo-card>
+  </div>
+
   <app-modal *ngIf="showModal" [img]="selectedPhoto" (closeModal)="closeModal()"></app-modal>
 </div>
