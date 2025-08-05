@@ -1,5 +1,5 @@
 
-<div class="card" style="width: 18rem;">
+<div class="photo-card" style="width: 18rem;">
   <img [src]="img.url" [alt]="img.description" class="photo-card-image"  (click)="openModal()" />
 
   <div class="card-body">
@@ -11,7 +11,7 @@
       class="btn btn-danger"
       data-bs-toggle="modal"
       [attr.data-bs-target]="'#confirmDeleteModal-' + img.filename"
-    >      Eliminar</button>
+    >Eliminar</button>
   </div>
 </div>
 <!-- MODAL ÚNICO por imagen -->

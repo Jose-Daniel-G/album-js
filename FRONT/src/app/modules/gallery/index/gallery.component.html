@@ -31,14 +31,14 @@
   </div>
 
   <!-- 🖼️ Imágenes -->
-  <div class="gallery-container">
-    <app-photo-card
-      *ngFor="let img of images"
-      [img]="img"
-      (photoSelected)="openModal($event)"
-      (deletePhoto)="deletePhoto(img)">
-    </app-photo-card>
+  <div class="row">
+      <div class="gallery-container col-12 col-sm-6 col-md-4 col-lg-3">
+      <app-photo-card
+        *ngFor="let img of images"
+        [img]="img"
+        (photoSelected)="openModal($event)"
+        (deletePhoto)="deletePhoto(img)">
+      </app-photo-card>
+    </div>
   </div>
-
-  <app-modal *ngIf="showModal" [img]="selectedPhoto" (closeModal)="closeModal()"></app-modal>
 </div>
