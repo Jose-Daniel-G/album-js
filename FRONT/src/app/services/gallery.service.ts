@@ -16,6 +16,7 @@ export class GalleryService {
   uploadImage(folder: string, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('image', file);
+    console.log('Subiendo imagen a:', `${this.apiUrl}/upload/${folder}`);
     return this.http.post(`${this.apiUrl}/upload/${folder}`, formData);
   }
 

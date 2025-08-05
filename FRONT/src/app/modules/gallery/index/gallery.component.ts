@@ -11,8 +11,8 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
   styleUrls: ['./gallery.component.css'],
 })
 export class GalleryComponent implements OnInit {
-  folders: string[] = ['default']; // inicial
-  currentFolder: string = 'default';
+  folders: string[] = []; // inicial
+  currentFolder: string = '';
   images: any[] = [];
   selectedPhoto: any | null = null;
   showModal = false;
@@ -111,21 +111,28 @@ getVisibleFolders(): string[] {
   }
 
 
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (!file) return;
+onFileSelected(event: any): void {
+  const file: File = event.target.files[0];
+  if (!file) return;
 
-    this.galleryService
-      .uploadImage(this.currentFolder, file)
-      .subscribe((response) => {
-        const newImage = {
-          url: response.url,
-          filename: response.filename,
-        };
-        this.images.unshift(newImage);
-        event.target.value = ''; // para permitir reusar el mismo archivo
-      });
-  }
+  const folderPath = this.currentFolder || ''; // ejemplo: "sub1/sub2"
+
+  this.galleryService.uploadImage(folderPath, file).subscribe({
+    next: (response) => {
+      const newImage = {
+        url: response.url,
+        filename: response.filename,
+      };
+      this.images.unshift(newImage);
+      event.target.value = ''; // permite volver a subir el mismo archivo
+    },
+    error: (err) => {
+      console.error('❌ Error al subir imagen:', err);
+    }
+  });
+}
+
+
   deletePhoto(img: any): void {
     const filename = img.url.split('/').pop(); // Extrae nombre del archivo
     console.log('Deleting filename:', filename); // <-- AÑADE ESTO

@@ -7,7 +7,8 @@ const fs = require("fs");
 const bodyParser = require("body-parser");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -38,62 +39,75 @@ app.post("/folders", (req, res) => {
 // Listar carpetas en /uploads
 // Reemplaza tu endpoint actual de /folders con este:
 app.get("/folders", (req, res) => {
-  const uploadsPath = path.join(__dirname, "uploads");
+  const basePath = path.join(__dirname, "uploads");
 
-  if (!fs.existsSync(uploadsPath)) {
-    return res.json([]); // sin carpetas
-  }
-
-  function getFoldersRecursive(basePath, relativePath = "") {
-    const fullPath = path.join(basePath, relativePath);
-    const entries = fs.readdirSync(fullPath, { withFileTypes: true });
+  const getFoldersRecursively = (dirPath, parent = '') => {
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
     let folders = [];
 
     for (const entry of entries) {
       if (entry.isDirectory()) {
-        const rel = path.join(relativePath, entry.name).replace(/\\/g, "/");
-        folders.push(rel); // 👈 añade la ruta relativa completa
-        folders = folders.concat(getFoldersRecursive(basePath, rel));
+        const relativePath = parent ? `${parent}/${entry.name}` : entry.name;
+        folders.push(relativePath);
+
+        // Buscar subcarpetas recursivamente
+        const subFolders = getFoldersRecursively(
+          path.join(dirPath, entry.name),
+          relativePath
+        );
+
+        folders = folders.concat(subFolders);
       }
     }
 
     return folders;
-  }
+  };
 
-  const folders = getFoldersRecursive(uploadsPath);
-  res.json(folders);
+  try {
+    const folders = getFoldersRecursively(basePath);
+    res.json(folders);
+  } catch (error) {
+    console.error("❌ Error leyendo carpetas:", error);
+    res.status(500).json({ error: "Error leyendo carpetas" });
+  }
 });
 
 
-// Subir imagen a carpeta
-app.post("/upload/:folder", (req, res) => {
-  const folder = req.params.folder;
-  const folderPath = path.join(__dirname, "uploads", folder);
 
-  const dynamicStorage = multer.diskStorage({
+// Subir imagen a carpeta
+app.post('/upload/*', (req, res) => {
+  const folder = req.params[0] || ''; // Esto captura 'asd/dos' o cualquier subcarpeta
+  const folderPath = path.join(__dirname, 'uploads', folder);
+
+  // Asegurarse que la carpeta exista
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath, { recursive: true });
+  }
+
+  // Configuración dinámica de multer
+  const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath, { recursive: true });
-      }
       cb(null, folderPath);
     },
     filename: (req, file, cb) => {
-      const uniqueName = Date.now() + "-" + file.originalname.toLowerCase();
+      const uniqueName = Date.now() + '-' + file.originalname.toLowerCase();
       cb(null, uniqueName);
     },
   });
 
-  const uploadToFolder = multer({ storage: dynamicStorage }).single("image");
+  const upload = multer({ storage }).single('image');
 
-  uploadToFolder(req, res, function (err) {
+  upload(req, res, function (err) {
     if (err || !req.file) {
-      return res.status(500).json({ error: "Error subiendo archivo" });
+      console.error('❌ Error al subir:', err);
+      return res.status(500).json({ error: 'Error al subir archivo' });
     }
 
     const fileUrl = `http://localhost:${PORT}/uploads/${folder}/${req.file.filename}`;
     res.json({ url: fileUrl, filename: req.file.filename });
   });
 });
+
 
   // Listar imágenes de una carpeta ordenadas por fecha de modificación (más reciente primero)
   app.get('/images/:folder', (req, res) => {
