@@ -5,28 +5,28 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class GalleryService {
-  private backendUrl = 'http://localhost:3000';
+  private apiUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) {}
 
   getImages(folder: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.backendUrl}/images/${folder}`);
+    return this.http.get<any[]>(`${this.apiUrl}/images/${folder}`);
   }
 
   uploadImage(folder: string, file: File): Observable<any> {
     const formData = new FormData();
     formData.append('image', file);
-    return this.http.post(`${this.backendUrl}/upload/${folder}`, formData);
+    return this.http.post(`${this.apiUrl}/upload/${folder}`, formData);
   }
 
   createFolder(folder: string): Observable<any> {
-    return this.http.post(`${this.backendUrl}/folders`, { folder });
+    return this.http.post(`${this.apiUrl}/folders`, { folder });
   }
   getFolders() {
-    return this.http.get<string[]>(`${this.backendUrl}/folders`);
+    return this.http.get<string[]>(`${this.apiUrl}/folders`);
   }
   deleteImage(folder: string, filename: string): Observable<any> {
-    return this.http.delete(`${this.backendUrl}/delete/${folder}/${filename}`);
+    return this.http.delete(`${this.apiUrl}/delete/${folder}/${filename}`);
   }
 
 }

@@ -36,6 +36,7 @@ app.post("/folders", (req, res) => {
   }
 });
 // Listar carpetas en /uploads
+// Reemplaza tu endpoint actual de /folders con este:
 app.get("/folders", (req, res) => {
   const uploadsPath = path.join(__dirname, "uploads");
 
@@ -43,13 +44,26 @@ app.get("/folders", (req, res) => {
     return res.json([]); // sin carpetas
   }
 
-  const items = fs.readdirSync(uploadsPath, { withFileTypes: true });
-  const folders = items
-    .filter((item) => item.isDirectory())
-    .map((dir) => dir.name);
+  function getFoldersRecursive(basePath, relativePath = "") {
+    const fullPath = path.join(basePath, relativePath);
+    const entries = fs.readdirSync(fullPath, { withFileTypes: true });
+    let folders = [];
 
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        const rel = path.join(relativePath, entry.name).replace(/\\/g, "/");
+        folders.push(rel); // 👈 añade la ruta relativa completa
+        folders = folders.concat(getFoldersRecursive(basePath, rel));
+      }
+    }
+
+    return folders;
+  }
+
+  const folders = getFoldersRecursive(uploadsPath);
   res.json(folders);
 });
+
 
 // Subir imagen a carpeta
 app.post("/upload/:folder", (req, res) => {
@@ -81,16 +95,21 @@ app.post("/upload/:folder", (req, res) => {
   });
 });
 
-// Listar imágenes de una carpeta ordenadas por fecha de modificación (más reciente primero)
-app.get('/images/:folder', (req, res) => {
-  const folder = req.params.folder;
-  const folderPath = path.join(__dirname, 'uploads', folder);
+  // Listar imágenes de una carpeta ordenadas por fecha de modificación (más reciente primero)
+  app.get('/images/:folder', (req, res) => {
+    const folder = req.params.folder;
+    const folderPath = path.join(__dirname, 'uploads', folder);
 
-  if (!fs.existsSync(folderPath)) {
-    return res.status(404).json({ message: 'Carpeta no encontrada' });
-  }
+    if (!fs.existsSync(folderPath)) {
+      return res.status(404).json({ message: 'Carpeta no encontrada' });
+    }
 
-  const files = fs.readdirSync(folderPath);
+  const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+  const files = fs.readdirSync(folderPath)
+    .filter(file => {
+      const ext = path.extname(file).toLowerCase();
+      return validExtensions.includes(ext);
+  });
 
   const images = files
     .map(file => {

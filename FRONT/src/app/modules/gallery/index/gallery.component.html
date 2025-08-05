@@ -16,6 +16,9 @@
         + Nueva carpeta
       </button>
     </div>
+    <!-- DEBUG: Mostrar cuántas subcarpetas hay -->
+<p>Subcarpetas: {{ getVisibleFolders().length }}</p>
+
     <div class="border rounded p-3 text-center bg-light" style="min-width: 120px; cursor: pointer;"
       *ngFor="let folder of getVisibleFolders()" (click)="onFolderClick(folder)">
       <div class="fs-1">📁</div>
