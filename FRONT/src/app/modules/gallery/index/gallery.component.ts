@@ -85,7 +85,7 @@ export class GalleryComponent implements OnInit {
   deletePhoto(img: any): void {
     const filename = img.url.split('/').pop(); // Extrae nombre del archivo
     console.log('Deleting filename:', filename); // <-- AÑADE ESTO
-    this.galleryService.deleteImage(filename).subscribe(() => {
+    this.galleryService.deleteImage(this.currentFolder, filename).subscribe(() => {
       // Elimina del arreglo
       this.images = this.images.filter((p) => p !== img); // Elimina de localStorage
 

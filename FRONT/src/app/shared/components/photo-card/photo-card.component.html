@@ -6,29 +6,35 @@
     <h5 class="card-title">Card title</h5>
     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.
     </p>
-    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
-      Eliminar
-    </button>
+    <button
+      type="button"
+      class="btn btn-danger"
+      data-bs-toggle="modal"
+      [attr.data-bs-target]="'#confirmDeleteModal-' + img.filename"
+    >      Eliminar</button>
   </div>
 </div>
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+<!-- MODAL ÚNICO por imagen -->
+<div
+  class="modal fade"
+  [id]="'confirmDeleteModal-' + img.filename"
+  tabindex="-1"
+  aria-labelledby="confirmDeleteLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      
       <div class="modal-header">
-        <h5 class="modal-title" id="confirmDeleteLabel">¿Estás seguro?</h5>
+        <h5 class="modal-title">¿Estás seguro?</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-
       <div class="modal-body">
-        Esta acción no se puede deshacer. ¿Deseas eliminar el elemento?
+        Esta acción no se puede deshacer. ¿Deseas eliminar esta imagen?
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" (click)="onDeleteClick()">Eliminar</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="onDeleteClick()">Eliminar</button>
       </div>
-
     </div>
   </div>
 </div>
