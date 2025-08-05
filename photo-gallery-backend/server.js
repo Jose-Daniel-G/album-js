@@ -19,7 +19,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Crear carpeta
 app.post("/folders", (req, res) => {
-  const folderName = req.body.folder;
+  const folderName = path.normalize(req.body.folder).replace(/^(\.\.(\/|\\|$))+/, '');
+
   if (!folderName) {
     return res.status(400).json({ message: "Nombre de carpeta requerido" });
   }

@@ -19,16 +19,13 @@ export class GalleryComponent implements OnInit {
 
   constructor(private galleryService: GalleryService) {}
 
-  ngOnInit(): void {
-    this.galleryService.getFolders().subscribe((folders) => {
-      this.folders = folders;
-      // Selecciona la primera carpeta disponible o un valor vacío
-      this.currentFolder = folders.length > 0 ? folders[0] : '';
-      if (this.currentFolder) {
-        this.loadImages();
-      }
-    });
-  }
+ngOnInit(): void {
+  this.galleryService.getFolders().subscribe((folders) => {
+    this.folders = folders.sort(); // ahora incluirá rutas como "padre/hija"
+    this.currentFolder = '';
+  });
+}
+
 
   loadImages(): void {
     console.log('Cargando imágenes de:', this.currentFolder);
@@ -49,23 +46,61 @@ export class GalleryComponent implements OnInit {
   }
 
   createFolder(): void {
-    const folder = prompt('Nombre de la nueva carpeta:');
-    if (folder) {
-      this.galleryService.createFolder(folder).subscribe(() => {
-        if (!this.folders.includes(folder)) {
-          this.folders.push(folder);
-        }
-        this.currentFolder = folder;
-        this.loadImages();
-      });
+    const newName = prompt('Nombre de la nueva carpeta:')?.trim();
+
+    if (!newName) {
+      alert('⚠️ El nombre de la carpeta no puede estar vacío.');
+      return;
     }
+
+    const invalidChars = /[<>:"/\\|?*]/;
+    if (invalidChars.test(newName)) {
+      alert('❌ El nombre de la carpeta contiene caracteres no permitidos.');
+      return;
+    }
+
+    // Si estás en una carpeta actual, crea una subcarpeta
+    const fullPath = this.currentFolder ? `${this.currentFolder}/${newName}` : newName;
+
+    this.galleryService.createFolder(fullPath).subscribe({
+      next: () => {
+        if (!this.folders.includes(fullPath)) {
+          this.folders.push(fullPath);
+        }
+        this.currentFolder = fullPath;
+        this.loadImages();
+        alert('✅ Carpeta creada correctamente');
+      },
+      error: (err) => {
+        console.error('Error al crear carpeta:', err);
+        alert('❌ No se pudo crear la carpeta.');
+      }
+    });
+  }
+
+  getVisibleFolders(): string[] {
+    if (!this.currentFolder) {
+      return this.folders.filter(f => !f.includes('/'));
+    }
+
+    const prefix = this.currentFolder + '/';
+
+    return this.folders
+      .filter(f => f.startsWith(prefix) && f !== this.currentFolder)
+      .map(f => {
+        const sub = f.slice(prefix.length);
+        return sub.includes('/') ? sub.split('/')[0] : sub;
+      })
+      .filter((v, i, a) => a.indexOf(v) === i);
   }
 
   onFolderClick(folder: string): void {
-    console.log('Carpeta seleccionada:', folder);
-    this.currentFolder = folder;
+    this.currentFolder = this.currentFolder ? `${this.currentFolder}/${folder}` : folder;
+    console.log('Carpeta seleccionada:', this.currentFolder);
+
     this.loadImages();
   }
+
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
